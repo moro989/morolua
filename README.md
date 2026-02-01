@@ -1,8 +1,8 @@
 # morolua
 
-A small, engine‑agnostic **utility library for Lua**, focused on clarity, safety, and game‑adjacent ergonomics.
+A small, engine‑agnostic **utility library for Lua**, focused on clarity, safety, and game‑adjacent ergonomics with **no dependecies**.
 
-morolua is **not** a framework. It does not try to control your architecture, your update loop, or your style. It exists to remove friction from plain Lua code — especially in game‑like environments.
+morolua is **not** a framework. It does not try to control your architecture, your update loop, or your style. It exists to remove friction from plain Lua code, especially in game‑like environments.
 
 ---
 
@@ -14,7 +14,7 @@ morolua is **not** a framework. It does not try to control your architecture, yo
 * Small, composable helpers
 * Explicit behavior and documented footguns
 
-If you want a framework, ECS, class system, or heavy abstractions — this is **not** that.
+If you want a framework, ECS, class system, or heavy abstractions, this is **not** that.
 
 ---
 
