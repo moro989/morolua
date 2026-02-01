@@ -45,6 +45,10 @@ function typex.isThread(x)
     return type(x) == "thread"
 end
 
+function typex.isUserdata(x)
+    return type(x) == "userdata"
+end
+
 function typex.isType(x, expected)
     return type(x) == expected
 end
