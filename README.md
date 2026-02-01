@@ -40,6 +40,7 @@ Utility helpers for working with strings safely and explicitly.
 * prefix & suffix checks
 * common string predicates
 * features buffers
+* custom stringx.utf8 implementation instead of Lua’s utf8 module, so it works on Lua versions older than 5.3.
 
 ### `typex`
 
