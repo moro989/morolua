@@ -16,14 +16,22 @@ function typex.isNil(x)
     return type(x) == "nil"
 end
 
-function typex.isCallable(x)
-    if type(x) == "function" then
+function typex.isCallable(x,seen)
+    seen = seen or {}
+    local t = type(x)
+    if t == "function" then
         return true
     end
 
-    if type(x) == "table" then
+    if t == "table" or t == "userdata" then
+        if seen[x] then --just so things dont go kaboom in an infinite loop
+            return false
+        end
+        seen[x] = true
         local mt = getmetatable(x)
-        return mt and type(mt.__call) == "function"
+        if mt and mt.__call then
+            return typex.isCallable(mt.__call, seen)
+        end
     end
 
     return false
