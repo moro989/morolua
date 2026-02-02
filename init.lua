@@ -9,5 +9,5 @@ return {
   eventx = require("core.eventx"),
   taskx = require("core.taskx"),
   assertx = require("core.assertx"),
-  asyncx.lua = require("core.asyncx")
+  asyncx = require("core.asyncx")
 }
