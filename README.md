@@ -135,6 +135,26 @@ Designed for:
 This is **not** multithreading.
 All tasks run on the main thread.
 
+### 'async'
+A small convenience layer built on top of `taskx` that provides a **sync / async friendly API**.
+
+`asyncx` does **not** introduce a new scheduler.  
+It exists to make coroutine-based async code easier to write and reuse, especially when the same function may be called both synchronously and asynchronously.
+
+Includes:
+
+* async task spawning
+* synchronous waiting (`await`)
+* sync-or-async function calls
+* small helpers (`sleep`, `defer`, `all`, `race`)
+
+Important:
+
+> `asyncx` uses `taskx` as its **default scheduler**.  
+> If no custom scheduler is provided, `taskx` will be required and used automatically.
+
+`asyncx` is cooperative and update-driven.  
+It does **not** create threads and will not run unless the scheduler is being updated.
 
 ---
 
