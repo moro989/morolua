@@ -1,6 +1,6 @@
--- taskx.lua
+$-- taskx.lua
 -- Cooperative task scheduler built on coroutines
-
+local unpack = table.unpack or unpack --lua 5.1  uses unpack while 5.2+ uses table.unpack
 local taskx = {}
 
 -- Tasks are stored locally for easy cancellation, pausing, etc.
@@ -12,13 +12,15 @@ local Task = {}
 Task.__index = Task
 
 -- Create a new task
-function Task.new(fn)
+function Task.new(fn,...)
     return setmetatable({
         fn = fn,
         co = coroutine.create(fn),
         wait = -1,       -- run immediately on first update
         cancelled = false,
         paused = false,
+        started = false, --to track first resume
+        args = select("#", ...) == 0 and {} or { ... },
 
         done = false,
         value = nil,
@@ -42,7 +44,7 @@ function Task:resume()
 end
 
 -- Restart this task
-function Task:restart()
+function Task:restart(...)
     self.co = coroutine.create(self.fn)
     self.wait = -1
     self.cancelled = false
@@ -50,7 +52,8 @@ function Task:restart()
     self.done = false
     self.value = nil
     self.err = nil
-
+    self.started = false
+    self.args = select("#",...) == 0 and {} or {...}
     -- reinsert if not already scheduled
     for _, t in ipairs(tasks) do
         if t == self then
@@ -87,8 +90,8 @@ end
 -- taskx API
 
 -- Spawn a new task
-function taskx.spawn(fn)
-    local task = Task.new(fn)
+function taskx.spawn(fn,...)
+    local task = Task.new(fn,...)
     table.insert(tasks, task)
     return task
 end
@@ -114,7 +117,14 @@ function taskx.update(dt)
             task.wait = task.wait - dt
 
             if task.wait <= 0 then
-                local ok, res = coroutine.resume(task.co)
+                local ok, res
+
+                if not task.started then
+                    task.started = true
+                    ok, res = coroutine.resume(task.co, unpack(task.args))
+                else
+                    ok, res = coroutine.resume(task.co)
+                end
 
                 if not ok then
                     -- Task crashed
