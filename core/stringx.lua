@@ -72,19 +72,21 @@ function stringx.buffer()
     return obj
 end
 
-function stringx.progressiveString(s)
-    assert(type(s) == "string", "expected string")
-
+-- Generic progressive helper using a character producer
+local function progressiveFromIterator(nextChar)
     local buf = stringx.buffer()
-    local index = 1
-    local len = #s
+    local done = false
 
     local obj = {}
 
     function obj:update()
-        if index <= len then
-            buf:push(string.sub(s, index, index))
-            index = index + 1
+        if not done then
+            local ch = nextChar()
+            if ch then
+                buf:push(ch)
+            else
+                done = true
+            end
         end
         return buf:concat()
     end
@@ -94,14 +96,40 @@ function stringx.progressiveString(s)
     end
 
     function obj:isDone()
-        return index > len
+        return done
     end
 
     function obj:reset()
         buf:clear()
-        index = 1
+        done = false
+        if obj._reset then
+            nextChar = obj._reset()
+        end
     end
 
+    return obj
+end
+
+-- Byte-based progressive string
+function stringx.progressiveString(s)
+    assert(type(s) == "string", "expected string")
+
+    local index = 1
+    local len = #s
+
+    local function makeIter()
+        index = 1
+        return function()
+            if index <= len then
+                local ch = string.sub(s, index, index)
+                index = index + 1
+                return ch
+            end
+        end
+    end
+
+    local obj = progressiveFromIterator(makeIter())
+    obj._reset = makeIter
     return obj
 end
 
@@ -133,8 +161,6 @@ buf:push("a")
 buf:push("b")
 buf:push("c")
 print(buf:concat("-"))  -- "a-b-c"
-
-
 ]]
 
 stringx.utf8 = {}
@@ -215,6 +241,7 @@ function stringx.utf8.iter(s)
         return string.sub(s, start, i - 1)
     end
 end
+
 --[[example usage for stringx.utf8.iter(s):
 for ch in stringx.utf8.iter("héllo") do
     print(ch)
@@ -246,6 +273,19 @@ function stringx.utf8.codepoint(s, targetIndex)
     end
 
     return nil
+end
+
+-- UTF-8 progressive string using iterator + shared helper
+function stringx.utf8.progressiveString(s)
+    assert(type(s) == "string", "expected string")
+
+    local function makeIter()
+        return stringx.utf8.iter(s)
+    end
+
+    local obj = progressiveFromIterator(makeIter())
+    obj._reset = makeIter
+    return obj
 end
 
 return stringx
