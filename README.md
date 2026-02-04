@@ -232,3 +232,8 @@ APIs may evolve until v1.0.0, after which breaking changes will follow semantic 
 ---
 
 If morolua saves you even a little bit of brainpower, it did its job.
+
+## Credits
+
+Thanks to the contributors who helped improve morolua, see CONTRIBUTORS.md for detail:
+xesdoog
