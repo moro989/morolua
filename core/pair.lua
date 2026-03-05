@@ -64,3 +64,5 @@ function pair.new(a, b)
 	local obj = { _raw = { a, b } }
 	return setmetatable(obj, _mt)
 end
+
+return pair
