@@ -1,4 +1,4 @@
-$-- taskx.lua
+-- taskx.lua
 -- Cooperative task scheduler built on coroutines
 local unpack = table.unpack or unpack --lua 5.1  uses unpack while 5.2+ uses table.unpack
 local taskx = {}
